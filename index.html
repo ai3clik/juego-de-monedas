@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Juego de las Monedas y el Dado - Hoja Diagonal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,6 +16,7 @@
             background-color: #1c1917;
             color: #f5f5f4;
             user-select: none;
+            touch-action: manipulation;
         }
 
         .handwritten {
@@ -35,19 +36,17 @@
             border: 1px solid #e7e5e4;
         }
 
-        /* Realistic Bimetallic Coin */
+        /* Realistic Bimetallic Dynamic Coin */
         .coin-node {
             position: absolute;
-            width: 44px;
-            height: 44px;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #fef08a 0%, #eab308 55%, #ca8a04 100%);
-            border: 4px solid #a8a29e;
+            border: 3px solid #a8a29e;
             box-shadow: 2px 4px 8px rgba(0,0,0,0.35), inset -1px -1px 2px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: left 0.7s ease-in-out, top 0.7s ease-in-out, transform 0.7s ease-in-out, box-shadow 0.3s ease;
+            transition: left 0.7s ease-in-out, top 0.7s ease-in-out, transform 0.7s ease-in-out, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
             cursor: pointer;
             z-index: 25;
         }
@@ -60,14 +59,14 @@
         .coin-node::after {
             content: '$';
             font-weight: 800;
-            font-size: 14px;
+            font-size: clamp(10px, 2.5vw, 14px);
             color: #854d0e;
         }
 
         /* 3D Dice Styling */
         .scene {
-            width: 80px;
-            height: 80px;
+            width: clamp(60px, 15vw, 80px);
+            height: clamp(60px, 15vw, 80px);
             perspective: 400px;
         }
 
@@ -81,22 +80,22 @@
 
         .cube-face {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 100%;
+            height: 100%;
             background: #16a34a;
             border: 2px solid #15803d;
-            border-radius: 16px;
+            border-radius: 14px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 8px rgba(0,0,0,0.15);
             display: grid;
             grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-            padding: 10px;
+            padding: 10%;
             box-sizing: border-box;
         }
 
         .dot {
             display: block;
-            width: 12px;
-            height: 12px;
+            width: 70%;
+            height: 70%;
             background-color: #ffffff;
             border-radius: 50%;
             align-self: center;
@@ -104,13 +103,13 @@
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
         }
 
-        /* Cube Face Transforms */
-        .face-1 { transform: rotateY(0deg) translateZ(40px); }
-        .face-6 { transform: rotateY(180deg) translateZ(40px); }
-        .face-2 { transform: rotateY(-90deg) translateZ(40px); }
-        .face-5 { transform: rotateY(90deg) translateZ(40px); }
-        .face-3 { transform: rotateX(90deg) translateZ(40px); }
-        .face-4 { transform: rotateX(-90deg) translateZ(40px); }
+        /* Cube Face Transforms (scaled dynamically based on face size) */
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
+        .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
+        .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
+        .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(60px, 15vw, 80px) / 2)); }
 
         /* Dot Layouts for Dice Faces */
         .face-1 .dot { grid-area: 2 / 2; }
@@ -136,54 +135,54 @@
         .face-6 .dot:nth-child(6) { grid-area: 3 / 3; }
     </style>
 </head>
-<body class="wood-table min-h-screen flex flex-col justify-between p-3 sm:p-6 overflow-x-hidden">
+<body class="wood-table min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 overflow-x-hidden">
 
-    <header class="w-full max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-stone-900/80 backdrop-blur border border-stone-700/60 rounded-2xl p-4 mb-4 shadow-xl">
-        <div class="flex flex-wrap items-center gap-2.5">
+    <header class="w-full max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-3 bg-stone-900/80 backdrop-blur border border-stone-700/60 rounded-2xl p-2.5 sm:p-4 mb-3 shadow-xl">
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
             <!-- Mode Selector Dropdown (1 o 2 Jugadores) -->
             <div class="relative">
-                <select id="player-count-select" onchange="handlePlayerCountChange(this.value)" class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition shadow cursor-pointer focus:outline-none focus:border-amber-500">
+                <select id="player-count-select" onchange="handlePlayerCountChange(this.value)" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition shadow cursor-pointer focus:outline-none focus:border-amber-500">
                     <option value="1">1 Jugador (vs i.a)</option>
                     <option value="2">2 Jugadores</option>
                 </select>
             </div>
 
             <!-- Nueva Partida Button -->
-            <button onclick="resetGame()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 border border-amber-500 text-xs sm:text-sm font-extrabold transition flex items-center gap-2 shadow-lg" title="Empezar Nueva Partida">
-                <i class="fa-solid fa-rotate-right"></i> NUEVA PARTIDA
+            <button onclick="resetGame()" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 border border-amber-500 text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shadow-lg" title="Empezar Nueva Partida">
+                <i class="fa-solid fa-rotate-right"></i> <span class="hidden xs:inline">NUEVA PARTIDA</span><span class="xs:hidden">NUEVA</span>
             </button>
 
             <!-- Configuration Button -->
-            <button onclick="openSettingsModal()" class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow" title="Ajustes de Juego">
-                <i class="fa-solid fa-gear text-amber-400"></i> <span>Ajustes</span>
+            <button onclick="openSettingsModal()" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow" title="Ajustes de Juego">
+                <i class="fa-solid fa-gear text-amber-400"></i> <span class="hidden sm:inline">Ajustes</span>
             </button>
 
             <!-- Instructions Button -->
-            <button onclick="openInstructionsModal()" class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow" title="Instrucciones del juego">
-                <i class="fa-solid fa-book-open text-amber-400"></i> <span>Instrucciones</span>
+            <button onclick="openInstructionsModal()" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-600 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow" title="Instrucciones del juego">
+                <i class="fa-solid fa-book-open text-amber-400"></i> <span class="hidden sm:inline">Instrucciones</span>
             </button>
         </div>
 
         <!-- Timer & Help Button Container -->
-        <div class="flex flex-col items-end gap-1.5">
+        <div class="flex items-center sm:flex-col sm:items-end gap-2 sm:gap-1.5 ml-auto">
             <!-- Live Game Total Timer -->
-            <div class="flex items-center gap-2 bg-stone-950/80 border border-stone-800 px-3.5 py-1.5 rounded-xl text-amber-400 font-mono text-sm sm:text-base font-bold shadow-inner" title="Tiempo total de la partida">
+            <div class="flex items-center gap-1.5 bg-stone-950/80 border border-stone-800 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-amber-400 font-mono text-xs sm:text-base font-bold shadow-inner" title="Tiempo total de la partida">
                 <i class="fa-solid fa-stopwatch animate-pulse"></i>
                 <span id="timer-display">00:00</span>
             </div>
 
-            <!-- Help Button below the general timer -->
-            <button onclick="openHelpModal()" class="px-3 py-1 rounded-lg bg-stone-800/90 hover:bg-stone-700 text-amber-400 border border-stone-700 text-[11px] font-bold transition flex items-center gap-1.5 shadow" title="Preguntas frecuentes y ayuda">
+            <!-- Help Button -->
+            <button onclick="openHelpModal()" class="px-2.5 py-1 rounded-lg bg-stone-800/90 hover:bg-stone-700 text-amber-400 border border-stone-700 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1 shadow" title="Preguntas frecuentes y ayuda">
                 <i class="fa-solid fa-circle-question"></i> Ayuda
             </button>
         </div>
     </header>
 
-    <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col md:flex-row items-stretch justify-center gap-6">
+    <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col md:flex-row items-center md:items-stretch justify-center gap-4 sm:gap-6">
 
         <!-- LEFT SIDE: Interactive Diagonal Paper Board -->
-        <div class="w-full md:w-3/5 flex flex-col items-center">
-            <div id="paper-board" class="relative w-full max-w-[420px] aspect-[3/4] paper-sheet rounded-2xl p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-2xl transition-all">
+        <div class="w-full max-w-[420px] md:w-3/5 flex flex-col items-center">
+            <div id="paper-board" class="relative w-full aspect-[3/4] max-h-[70vh] md:max-h-none paper-sheet rounded-2xl p-3 sm:p-5 flex flex-col justify-between overflow-hidden shadow-2xl transition-all">
                 
                 <!-- Turn Light Green Background Overlay & Red Diagonal Line -->
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none z-10">
@@ -197,38 +196,38 @@
 
                 <!-- PLAYER 1 AREA (Top Left) -->
                 <div class="z-20 flex justify-between items-start w-full">
-                    <div id="p1-info-card" class="bg-white/85 backdrop-blur-md border border-blue-200/80 p-2 sm:p-2.5 rounded-xl shadow-md max-w-[270px]">
-                        <div class="flex items-center justify-between gap-2">
-                            <h2 id="p1-name" class="handwritten text-3xl sm:text-4xl font-extrabold text-blue-900 tracking-wider">Jugador 1</h2>
+                    <div id="p1-info-card" class="bg-white/85 backdrop-blur-md border border-blue-200/80 p-1.5 sm:p-2.5 rounded-xl shadow-md max-w-[70%] sm:max-w-[270px]">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <h2 id="p1-name" class="handwritten text-2xl sm:text-4xl font-extrabold text-blue-900 tracking-wider truncate">Jugador 1</h2>
                             <!-- P1 Turn Clock -->
-                            <div id="p1-turn-clock" class="bg-blue-100/90 border border-blue-300 text-blue-900 text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm">
+                            <div id="p1-turn-clock" class="bg-blue-100/90 border border-blue-300 text-blue-900 text-[10px] sm:text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-lg flex items-center gap-1 shadow-sm flex-shrink-0">
                                 <i class="fa-regular fa-clock text-blue-700 animate-spin"></i>
                                 <span id="p1-turn-time">00:00</span>
                             </div>
                         </div>
                         
                         <!-- Horizontal Table for Player 1 -->
-                        <table class="w-full text-center text-[10px] sm:text-[11px] font-semibold text-stone-800 border-collapse mt-1">
+                        <table class="w-full text-center text-[9px] sm:text-[11px] font-semibold text-stone-800 border-collapse mt-1">
                             <thead>
-                                <tr class="bg-blue-100/90 text-blue-900 text-[9px] sm:text-[10px] uppercase font-bold">
-                                    <th class="px-1.5 py-0.5 rounded-l">Inicial</th>
-                                    <th class="px-1.5 py-0.5">Actual</th>
-                                    <th class="px-1.5 py-0.5">Ganadas</th>
-                                    <th class="px-1.5 py-0.5 rounded-r">Perdidas</th>
+                                <tr class="bg-blue-100/90 text-blue-900 text-[8px] sm:text-[10px] uppercase font-bold">
+                                    <th class="px-1 py-0.5 rounded-l">Inicial</th>
+                                    <th class="px-1 py-0.5">Actual</th>
+                                    <th class="px-1 py-0.5">Ganadas</th>
+                                    <th class="px-1 py-0.5 rounded-r">Perdidas</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="bg-white/90 font-bold">
-                                    <td id="p1-init" class="px-1.5 py-1 text-stone-600 border-r border-stone-200">6</td>
-                                    <td id="p1-count" class="px-1.5 py-1 text-blue-700 text-xs border-r border-stone-200">6</td>
-                                    <td id="p1-won" class="px-1.5 py-1 text-emerald-600 border-r border-stone-200">0</td>
-                                    <td id="p1-lost" class="px-1.5 py-1 text-rose-600">0</td>
+                                    <td id="p1-init" class="px-1 py-0.5 text-stone-600 border-r border-stone-200">6</td>
+                                    <td id="p1-count" class="px-1 py-0.5 text-blue-700 text-xs border-r border-stone-200">6</td>
+                                    <td id="p1-won" class="px-1 py-0.5 text-emerald-600 border-r border-stone-200">0</td>
+                                    <td id="p1-lost" class="px-1 py-0.5 text-rose-600">0</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div id="p1-turn-indicator" class="bg-blue-600 text-white text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
-                        <i class="fa-solid fa-hand-pointer"></i> Turno actual
+                    <div id="p1-turn-indicator" class="bg-blue-600 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
+                        <i class="fa-solid fa-hand-pointer"></i> Turno
                     </div>
                 </div>
 
@@ -239,57 +238,57 @@
 
                 <!-- PLAYER 2 AREA (Bottom Right) -->
                 <div class="z-20 flex justify-between items-end self-end w-full flex-row-reverse">
-                    <div id="p2-info-card" class="bg-white/85 backdrop-blur-md border border-emerald-200/80 p-2 sm:p-2.5 rounded-xl shadow-md max-w-[270px]">
-                        <div class="flex items-center justify-between gap-2">
+                    <div id="p2-info-card" class="bg-white/85 backdrop-blur-md border border-emerald-200/80 p-1.5 sm:p-2.5 rounded-xl shadow-md max-w-[70%] sm:max-w-[270px]">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <!-- P2 Turn Clock -->
-                            <div id="p2-turn-clock" class="hidden bg-emerald-100/90 border border-emerald-300 text-emerald-900 text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm">
+                            <div id="p2-turn-clock" class="hidden bg-emerald-100/90 border border-emerald-300 text-emerald-900 text-[10px] sm:text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-lg flex items-center gap-1 shadow-sm flex-shrink-0">
                                 <i class="fa-regular fa-clock text-emerald-700 animate-spin"></i>
                                 <span id="p2-turn-time">00:00</span>
                             </div>
-                            <h2 id="p2-name" class="handwritten text-3xl sm:text-4xl font-extrabold text-emerald-900 tracking-wider text-right">i.a</h2>
+                            <h2 id="p2-name" class="handwritten text-2xl sm:text-4xl font-extrabold text-emerald-900 tracking-wider text-right truncate">i.a</h2>
                         </div>
                         
                         <!-- Horizontal Table for Player 2 -->
-                        <table class="w-full text-center text-[10px] sm:text-[11px] font-semibold text-stone-800 border-collapse mt-1">
+                        <table class="w-full text-center text-[9px] sm:text-[11px] font-semibold text-stone-800 border-collapse mt-1">
                             <thead>
-                                <tr class="bg-emerald-100/90 text-emerald-900 text-[9px] sm:text-[10px] uppercase font-bold">
-                                    <th class="px-1.5 py-0.5 rounded-l">Inicial</th>
-                                    <th class="px-1.5 py-0.5">Actual</th>
-                                    <th class="px-1.5 py-0.5">Ganadas</th>
-                                    <th class="px-1.5 py-0.5 rounded-r">Perdidas</th>
+                                <tr class="bg-emerald-100/90 text-emerald-900 text-[8px] sm:text-[10px] uppercase font-bold">
+                                    <th class="px-1 py-0.5 rounded-l">Inicial</th>
+                                    <th class="px-1 py-0.5">Actual</th>
+                                    <th class="px-1 py-0.5">Ganadas</th>
+                                    <th class="px-1 py-0.5 rounded-r">Perdidas</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="bg-white/90 font-bold">
-                                    <td id="p2-init" class="px-1.5 py-1 text-stone-600 border-r border-stone-200">6</td>
-                                    <td id="p2-count" class="px-1.5 py-1 text-emerald-700 text-xs border-r border-stone-200">6</td>
-                                    <td id="p2-won" class="px-1.5 py-1 text-emerald-600 border-r border-stone-200">0</td>
-                                    <td id="p2-lost" class="px-1.5 py-1 text-rose-600">0</td>
+                                    <td id="p2-init" class="px-1 py-0.5 text-stone-600 border-r border-stone-200">6</td>
+                                    <td id="p2-count" class="px-1 py-0.5 text-emerald-700 text-xs border-r border-stone-200">6</td>
+                                    <td id="p2-won" class="px-1 py-0.5 text-emerald-600 border-r border-stone-200">0</td>
+                                    <td id="p2-lost" class="px-1 py-0.5 text-rose-600">0</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div id="p2-turn-indicator" class="hidden bg-emerald-600 text-white text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
-                        <i class="fa-solid fa-hand-pointer"></i> Turno actual
+                    <div id="p2-turn-indicator" class="hidden bg-emerald-600 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
+                        <i class="fa-solid fa-hand-pointer"></i> Turno
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- RIGHT SIDE: Dice Rolling & Action Control Panel -->
-        <div class="w-full md:w-2/5 flex flex-col justify-between gap-4 bg-stone-900/90 backdrop-blur border border-stone-700/60 rounded-2xl p-5 shadow-2xl">
+        <div class="w-full max-w-[420px] md:w-2/5 flex flex-col justify-between gap-3 sm:gap-4 bg-stone-900/90 backdrop-blur border border-stone-700/60 rounded-2xl p-4 sm:p-5 shadow-2xl">
             
             <!-- Current Turn & Status Card -->
-            <div class="text-center bg-stone-800/80 rounded-xl p-3 border border-stone-700">
-                <span class="text-xs uppercase tracking-widest text-stone-400 font-bold">Turno Actual</span>
-                <div id="active-player-display" class="text-2xl font-extrabold text-blue-400 mt-1 flex items-center justify-center gap-2">
+            <div class="text-center bg-stone-800/80 rounded-xl p-2.5 sm:p-3 border border-stone-700">
+                <span class="text-[10px] sm:text-xs uppercase tracking-widest text-stone-400 font-bold">Turno Actual</span>
+                <div id="active-player-display" class="text-xl sm:text-2xl font-extrabold text-blue-400 mt-0.5 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-user"></i> Jugador 1
                 </div>
             </div>
 
             <!-- 3D Interactive Dice Section -->
-            <div class="flex flex-col items-center justify-center py-4 bg-stone-950/60 rounded-xl border border-stone-800 relative">
-                <div class="scene mb-4">
+            <div class="flex flex-col items-center justify-center py-3 sm:py-4 bg-stone-950/60 rounded-xl border border-stone-800 relative">
+                <div class="scene mb-3 sm:mb-4">
                     <div id="dice-cube" class="cube">
                         <div class="cube-face face-1"><span class="dot"></span></div>
                         <div class="cube-face face-2"><span class="dot"></span><span class="dot"></span></div>
@@ -301,25 +300,25 @@
                 </div>
 
                 <!-- Roll Button -->
-                <button id="btn-roll" onclick="rollDice()" class="w-4/5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-extrabold text-base tracking-wide shadow-lg shadow-green-900/40 border border-green-400/30 transition active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-dice text-lg"></i> TIRAR DADO
+                <button id="btn-roll" onclick="rollDice()" class="w-4/5 py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-extrabold text-sm sm:text-base tracking-wide shadow-lg shadow-green-900/40 border border-green-400/30 transition active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-dice text-base sm:text-lg"></i> TIRAR DADO
                 </button>
             </div>
 
             <!-- Last Action Announcement Box -->
-            <div class="bg-stone-800/90 border border-amber-500/30 rounded-xl p-3 text-center min-h-[70px] flex flex-col justify-center">
-                <span class="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Última Acción</span>
-                <p id="action-announcement" class="text-sm font-semibold text-stone-200 mt-1">
+            <div class="bg-stone-800/90 border border-amber-500/30 rounded-xl p-2.5 sm:p-3 text-center min-h-[60px] sm:min-h-[70px] flex flex-col justify-center">
+                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-amber-500 tracking-wider">Última Acción</span>
+                <p id="action-announcement" class="text-xs sm:text-sm font-semibold text-stone-200 mt-0.5">
                     ¡El juego está listo! Presiona "TIRAR DADO" para comenzar.
                 </p>
             </div>
 
             <!-- History Log -->
-            <div class="flex-1 flex flex-col min-h-[140px] bg-stone-950/80 rounded-xl p-3 border border-stone-800">
-                <span class="text-xs font-bold text-stone-400 mb-2 flex items-center gap-1.5">
+            <div class="flex-1 flex flex-col min-h-[120px] sm:min-h-[140px] bg-stone-950/80 rounded-xl p-2.5 sm:p-3 border border-stone-800">
+                <span class="text-[11px] sm:text-xs font-bold text-stone-400 mb-1.5 flex items-center gap-1.5">
                     <i class="fa-solid fa-clock-rotate-left"></i> Historial de Movimientos
                 </span>
-                <div id="history-log" class="flex-1 overflow-y-auto space-y-1.5 pr-1 text-xs text-stone-300 max-h-[150px]">
+                <div id="history-log" class="flex-1 overflow-y-auto space-y-1.5 pr-1 text-[11px] sm:text-xs text-stone-300 max-h-[120px] sm:max-h-[150px]">
                     <div class="text-stone-500 italic text-center py-2">Sin tiradas aún</div>
                 </div>
             </div>
@@ -327,10 +326,10 @@
     </main>
 
     <!-- Instructions Modal -->
-    <div id="instructions-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative max-h-[85vh] flex flex-col">
-            <div class="flex items-center justify-between pb-3 mb-3 border-b border-stone-800 flex-shrink-0">
-                <h3 class="text-lg font-extrabold text-amber-400 flex items-center gap-2">
+    <div id="instructions-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-4 sm:p-6 max-w-lg w-full shadow-2xl relative max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-stone-800 flex-shrink-0">
+                <h3 class="text-base sm:text-lg font-extrabold text-amber-400 flex items-center gap-2">
                     <i class="fa-solid fa-book-open"></i> Instrucciones del Juego
                 </h3>
                 <button onclick="closeInstructionsModal()" class="text-stone-400 hover:text-white transition">
@@ -338,43 +337,43 @@
                 </button>
             </div>
 
-            <div class="space-y-4 text-xs sm:text-sm text-stone-300 overflow-y-auto pr-2 flex-1">
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <h4 class="font-bold text-amber-400 text-sm mb-1">1. Inicio de la Partida</h4>
+            <div class="space-y-3 text-xs sm:text-sm text-stone-300 overflow-y-auto pr-1 flex-1">
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <h4 class="font-bold text-amber-400 text-xs sm:text-sm mb-1">1. Inicio de la Partida</h4>
                     <p class="text-stone-300">Cada jugador comienza por defecto con <strong>6 monedas</strong> en su lado de la hoja. La hoja está dividida por una línea diagonal roja.</p>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <h4 class="font-bold text-amber-400 text-sm mb-1">2. Dinámica del Turno</h4>
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <h4 class="font-bold text-amber-400 text-xs sm:text-sm mb-1">2. Dinámica del Turno</h4>
                     <p class="text-stone-300">En su turno, el jugador presiona <strong>"TIRAR DADO"</strong>. El número obtenido determina cuántas monedas le roba directamente a su oponente.</p>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <h4 class="font-bold text-amber-400 text-sm mb-1">3. Reglas de las Monedas</h4>
-                    <ul class="list-disc list-inside space-y-1 text-stone-300">
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <h4 class="font-bold text-amber-400 text-xs sm:text-sm mb-1">3. Reglas de las Monedas</h4>
+                    <ul class="list-disc list-inside space-y-0.5 text-stone-300">
                         <li>Las monedas nunca se amontonan ni quedan superpuestas.</li>
                         <li>Ninguna moneda puede quedar situada sobre la línea roja diagonal.</li>
                         <li>Las monedas jamás tapan las tablas de estadísticas.</li>
                     </ul>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <h4 class="font-bold text-amber-400 text-sm mb-1">4. ¿Quién Gana?</h4>
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <h4 class="font-bold text-amber-400 text-xs sm:text-sm mb-1">4. ¿Quién Gana?</h4>
                     <p class="text-stone-300">Gana la partida el primer jugador que logre dejar al rival en <strong>0 monedas</strong>. Al finalizar se mostrará un resumen completo de tiempo y monedas.</p>
                 </div>
             </div>
 
-            <button onclick="closeInstructionsModal()" class="mt-4 w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg flex-shrink-0">
+            <button onclick="closeInstructionsModal()" class="mt-3 sm:mt-4 w-full py-2 sm:py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg flex-shrink-0">
                 Entendido
             </button>
         </div>
     </div>
 
     <!-- Help / FAQ Modal -->
-    <div id="help-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative max-h-[85vh] flex flex-col">
-            <div class="flex items-center justify-between pb-3 mb-3 border-b border-stone-800 flex-shrink-0">
-                <h3 class="text-lg font-extrabold text-amber-400 flex items-center gap-2">
+    <div id="help-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-4 sm:p-6 max-w-lg w-full shadow-2xl relative max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-stone-800 flex-shrink-0">
+                <h3 class="text-base sm:text-lg font-extrabold text-amber-400 flex items-center gap-2">
                     <i class="fa-solid fa-circle-question"></i> Preguntas Frecuentes (FAQ)
                 </h3>
                 <button onclick="closeHelpModal()" class="text-stone-400 hover:text-white transition">
@@ -382,19 +381,19 @@
                 </button>
             </div>
 
-            <div class="space-y-3 text-xs sm:text-sm text-stone-300 overflow-y-auto pr-2 flex-1">
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <span class="font-bold text-amber-400 block mb-1">¿Cómo selecciono entre 1 o 2 jugadores?</span>
+            <div class="space-y-2.5 text-xs sm:text-sm text-stone-300 overflow-y-auto pr-1 flex-1">
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <span class="font-bold text-amber-400 block mb-0.5">¿Cómo selecciono entre 1 o 2 jugadores?</span>
                     <p class="text-stone-300">En la parte superior izquierda usa el desplegable. Al seleccionar <strong>1 Jugador</strong> jugarás contra <strong>i.a</strong>. Al elegir <strong>2 Jugadores</strong> jugarás de forma local contra un amigo.</p>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <span class="font-bold text-amber-400 block mb-1">¿Cómo puedo personalizar nombres o cantidad de monedas?</span>
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <span class="font-bold text-amber-400 block mb-0.5">¿Cómo puedo personalizar nombres o cantidad de monedas?</span>
                     <p class="text-stone-300">Pulsa el botón <strong>Ajustes</strong>. Podrás cambiar los nombres de los jugadores y definir con cuántas monedas inicia cada uno (de 1 a 15 monedas).</p>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <span class="font-bold text-amber-400 block mb-1">¿Qué significan los contadores en la tabla del jugador?</span>
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <span class="font-bold text-amber-400 block mb-0.5">¿Qué significan los contadores en la tabla del jugador?</span>
                     <ul class="list-disc list-inside space-y-0.5 text-stone-300">
                         <li><strong>Inicial:</strong> Monedas con las que comenzó.</li>
                         <li><strong>Actual:</strong> Monedas que posee actualmente.</li>
@@ -403,23 +402,23 @@
                     </ul>
                 </div>
 
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
-                    <span class="font-bold text-amber-400 block mb-1">¿Qué hace el reloj que aparece en el jugador?</span>
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800">
+                    <span class="font-bold text-amber-400 block mb-0.5">¿Qué hace el reloj que aparece en el jugador?</span>
                     <p class="text-stone-300">Es el cronómetro del turno activo. Se reinicia a 00:00 cada vez que pasa el turno para medir cuánto tarda cada jugador en realizar su tiro.</p>
                 </div>
             </div>
 
-            <button onclick="closeHelpModal()" class="mt-4 w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg flex-shrink-0">
+            <button onclick="closeHelpModal()" class="mt-3 sm:mt-4 w-full py-2 sm:py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg flex-shrink-0">
                 Cerrar Ayuda
             </button>
         </div>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-stone-800">
-                <h3 class="text-lg font-extrabold text-amber-400 flex items-center gap-2">
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-stone-900 border border-stone-700 rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl relative">
+            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-stone-800">
+                <h3 class="text-base sm:text-lg font-extrabold text-amber-400 flex items-center gap-2">
                     <i class="fa-solid fa-sliders"></i> Configuración de la Partida
                 </h3>
                 <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-white transition">
@@ -427,39 +426,39 @@
                 </button>
             </div>
 
-            <div class="space-y-4 text-xs sm:text-sm text-stone-300">
+            <div class="space-y-3 text-xs sm:text-sm text-stone-300">
                 <!-- Player 1 Config -->
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800 space-y-2">
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800 space-y-2">
                     <span class="font-bold text-blue-400 uppercase tracking-wider block">Jugador 1 (Arriba)</span>
                     <div class="flex items-center gap-2">
                         <label class="w-1/3 text-stone-400">Nombre:</label>
-                        <input id="cfg-p1-name" type="text" value="Jugador 1" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-3 py-1.5 text-white font-semibold focus:outline-none focus:border-amber-500">
+                        <input id="cfg-p1-name" type="text" value="Jugador 1" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-2.5 py-1 text-white font-semibold focus:outline-none focus:border-amber-500">
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="w-1/3 text-stone-400">Monedas iniciales:</label>
-                        <input id="cfg-p1-coins" type="number" min="1" max="15" value="6" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-3 py-1.5 text-white font-semibold focus:outline-none focus:border-amber-500">
+                        <input id="cfg-p1-coins" type="number" min="1" max="15" value="6" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-2.5 py-1 text-white font-semibold focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
 
                 <!-- Player 2 Config -->
-                <div class="bg-stone-950/60 p-3 rounded-xl border border-stone-800 space-y-2">
+                <div class="bg-stone-950/60 p-2.5 sm:p-3 rounded-xl border border-stone-800 space-y-2">
                     <span class="font-bold text-emerald-400 uppercase tracking-wider block">Jugador 2 (Abajo)</span>
                     <div class="flex items-center gap-2">
                         <label class="w-1/3 text-stone-400">Nombre:</label>
-                        <input id="cfg-p2-name" type="text" value="Jugador 2" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-3 py-1.5 text-white font-semibold focus:outline-none focus:border-amber-500">
+                        <input id="cfg-p2-name" type="text" value="Jugador 2" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-2.5 py-1 text-white font-semibold focus:outline-none focus:border-amber-500">
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="w-1/3 text-stone-400">Monedas iniciales:</label>
-                        <input id="cfg-p2-coins" type="number" min="1" max="15" value="6" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-3 py-1.5 text-white font-semibold focus:outline-none focus:border-amber-500">
+                        <input id="cfg-p2-coins" type="number" min="1" max="15" value="6" class="w-2/3 bg-stone-800 border border-stone-700 rounded-lg px-2.5 py-1 text-white font-semibold focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
             </div>
 
-            <div class="mt-6 flex gap-3">
-                <button onclick="closeSettingsModal()" class="w-1/2 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl transition">
+            <div class="mt-5 flex gap-2.5">
+                <button onclick="closeSettingsModal()" class="w-1/2 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl transition">
                     Cancelar
                 </button>
-                <button onclick="saveSettings()" class="w-1/2 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg">
+                <button onclick="saveSettings()" class="w-1/2 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg">
                     Guardar y Reiniciar
                 </button>
             </div>
@@ -467,49 +466,49 @@
     </div>
 
     <!-- Victory Modal Overlay -->
-    <div id="winner-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-stone-900 border-2 border-amber-500/60 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-scale">
-            <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 border border-amber-500/40">
+    <div id="winner-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-stone-900 border-2 border-amber-500/60 rounded-2xl p-5 sm:p-6 max-w-sm w-full text-center shadow-2xl relative animate-scale">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-2 sm:mb-3 border border-amber-500/40">
                 <i class="fa-solid fa-trophy"></i>
             </div>
-            <h2 class="text-2xl font-extrabold text-stone-100 mb-1">¡TENEMOS GANADOR!</h2>
-            <p id="winner-text" class="text-lg font-bold text-amber-400 mb-2">Jugador 1 ha ganado la partida</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-stone-100 mb-0.5">¡TENEMOS GANADOR!</h2>
+            <p id="winner-text" class="text-base sm:text-lg font-bold text-amber-400 mb-2">Jugador 1 ha ganado la partida</p>
 
-            <div class="bg-stone-950/80 rounded-xl p-3 border border-stone-800 my-3 space-y-1.5 text-xs text-stone-300">
+            <div class="bg-stone-950/80 rounded-xl p-2.5 sm:p-3 border border-stone-800 my-2.5 sm:my-3 space-y-1 text-xs text-stone-300">
                 <div class="flex justify-between items-center">
                     <span class="text-stone-400"><i class="fa-solid fa-stopwatch text-amber-400 mr-1"></i>Tiempo Jugado:</span>
                     <span id="final-time-text" class="font-mono font-bold text-stone-100">00:00</span>
                 </div>
-                <div class="flex justify-between items-center border-t border-stone-800/80 pt-1.5">
+                <div class="flex justify-between items-center border-t border-stone-800/80 pt-1">
                     <span class="text-stone-400"><i class="fa-solid fa-medal text-amber-400 mr-1"></i>Mejor Tiempo:</span>
                     <span id="best-time-text" class="font-mono font-bold text-amber-400">--:--</span>
                 </div>
             </div>
 
             <!-- Detailed Match Summary Table -->
-            <div class="bg-stone-950/80 rounded-xl p-3 border border-stone-800 my-3 text-xs">
-                <h3 class="text-amber-400 font-extrabold text-[11px] uppercase tracking-wider mb-2 border-b border-stone-800 pb-1 flex items-center justify-center gap-1.5">
+            <div class="bg-stone-950/80 rounded-xl p-2.5 sm:p-3 border border-stone-800 my-2.5 sm:my-3 text-xs">
+                <h3 class="text-amber-400 font-extrabold text-[10px] sm:text-[11px] uppercase tracking-wider mb-1.5 border-b border-stone-800 pb-1 flex items-center justify-center gap-1">
                     <i class="fa-solid fa-chart-pie"></i> Resumen de Monedas
                 </h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-stone-300 border-collapse">
                         <thead>
-                            <tr class="text-[10px] text-stone-400 uppercase border-b border-stone-800">
-                                <th class="py-1 px-1">Jugador</th>
-                                <th class="py-1 px-1 text-center" title="Iniciales">Inicial</th>
-                                <th class="py-1 px-1 text-center" title="Finales">Final</th>
-                                <th class="py-1 px-1 text-center text-emerald-400" title="Ganadas en total">Ganadas</th>
-                                <th class="py-1 px-1 text-center text-rose-400" title="Perdidas en total">Perdidas</th>
+                            <tr class="text-[9px] sm:text-[10px] text-stone-400 uppercase border-b border-stone-800">
+                                <th class="py-1 px-0.5">Jugador</th>
+                                <th class="py-1 px-0.5 text-center" title="Iniciales">Inicial</th>
+                                <th class="py-1 px-0.5 text-center" title="Finales">Final</th>
+                                <th class="py-1 px-0.5 text-center text-emerald-400" title="Ganadas en total">Ganadas</th>
+                                <th class="py-1 px-0.5 text-center text-rose-400" title="Perdidas en total">Perdidas</th>
                             </tr>
                         </thead>
-                        <tbody id="summary-table-body" class="divide-y divide-stone-800/60 font-semibold text-[11px]">
+                        <tbody id="summary-table-body" class="divide-y divide-stone-800/60 font-semibold text-[10px] sm:text-[11px]">
                             <!-- Dynamic content populated by JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <button onclick="closeModal(); resetGame();" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg">
+            <button onclick="closeModal(); resetGame();" class="w-full py-2.5 sm:py-3 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold rounded-xl transition shadow-lg">
                 Jugar de Nuevo
             </button>
         </div>
@@ -733,30 +732,35 @@
             resetGame();
         }
 
+        // Calculate dynamic coin diameter based on container width
+        function getCoinDiameter(containerWidth) {
+            return Math.max(28, Math.min(44, Math.floor(containerWidth * 0.11)));
+        }
+
         // Generate strictly non-overlapping coin positions that NEVER touch the red diagonal line
         function getValidCoinPositions(owner, count, width, height, existingPositions = []) {
-            const coinDiameter = 44;
-            const coinRadius = 22;
-            const lineSafetyMargin = 8;
+            const coinDiameter = getCoinDiameter(width);
+            const coinRadius = coinDiameter / 2;
+            const lineSafetyMargin = Math.max(6, Math.floor(coinRadius * 0.3));
             const bufferRadius = coinRadius + lineSafetyMargin;
             
             const lineBuffer = (bufferRadius * Math.hypot(width, height)) / (width * height);
 
-            let minDistance = coinDiameter + 6; 
-            const margin = 28;
+            let minDistance = coinDiameter + 4; 
+            const margin = Math.max(16, Math.floor(coinRadius * 1.2));
             const positions = [];
 
             const p1Card = document.getElementById('p1-info-card');
             const p2Card = document.getElementById('p2-info-card');
 
-            let p1Bottom = 140;
-            let p2Top = height - 140;
+            let p1Bottom = 120;
+            let p2Top = height - 120;
 
             if (p1Card) {
-                p1Bottom = p1Card.offsetTop + p1Card.offsetHeight + 10;
+                p1Bottom = p1Card.offsetTop + p1Card.offsetHeight + 8;
             }
             if (p2Card) {
-                p2Top = p2Card.offsetTop - 10;
+                p2Top = p2Card.offsetTop - 8;
             }
 
             for (let i = 0; i < count; i++) {
@@ -798,8 +802,8 @@
                     let gridPlaced = false;
                     const currentMinDist = coinDiameter + 2;
 
-                    for (let gy = margin; gy <= height - margin && !gridPlaced; gy += 16) {
-                        for (let gx = margin; gx <= width - margin && !gridPlaced; gx += 16) {
+                    for (let gy = margin; gy <= height - margin && !gridPlaced; gy += 14) {
+                        for (let gx = margin; gx <= width - margin && !gridPlaced; gx += 14) {
                             const diagVal = (gx / width) + (gy / height);
                             if (owner === 1 && (diagVal >= (1.0 - lineBuffer) || gy < p1Bottom + coinRadius)) continue;
                             if (owner === 2 && (diagVal <= (1.0 + lineBuffer) || gy > p2Top - coinRadius)) continue;
@@ -826,8 +830,8 @@
         function initializeCoinList() {
             const container = document.getElementById('coins-container');
             const rect = container.getBoundingClientRect();
-            const width = rect.width || 360;
-            const height = rect.height || 480;
+            const width = rect.width || 340;
+            const height = rect.height || 450;
 
             STATE.coinList = [];
             container.innerHTML = '';
@@ -861,6 +865,9 @@
 
         function renderCoinNodes() {
             const container = document.getElementById('coins-container');
+            const width = container.getBoundingClientRect().width || 340;
+            const coinDiameter = getCoinDiameter(width);
+            const radius = coinDiameter / 2;
 
             STATE.coinList.forEach(coin => {
                 let coinEl = document.getElementById(coin.id);
@@ -870,8 +877,10 @@
                     coinEl.className = 'coin-node';
                     container.appendChild(coinEl);
                 }
-                coinEl.style.left = `${coin.x - 22}px`;
-                coinEl.style.top = `${coin.y - 22}px`;
+                coinEl.style.width = `${coinDiameter}px`;
+                coinEl.style.height = `${coinDiameter}px`;
+                coinEl.style.left = `${coin.x - radius}px`;
+                coinEl.style.top = `${coin.y - radius}px`;
                 coinEl.style.transform = `rotate(${coin.rotation}deg)`;
                 coinEl.title = `Moneda de ${coin.owner === 1 ? STATE.p1Name : getP2DisplayName()}`;
             });
@@ -891,8 +900,10 @@
         function animateCoinTransfer(fromOwner, toOwner, amount, callback) {
             const container = document.getElementById('coins-container');
             const rect = container.getBoundingClientRect();
-            const width = rect.width || 360;
-            const height = rect.height || 480;
+            const width = rect.width || 340;
+            const height = rect.height || 450;
+            const coinDiameter = getCoinDiameter(width);
+            const radius = coinDiameter / 2;
 
             const victimCoins = STATE.coinList.filter(c => c.owner === fromOwner);
             const coinsToMove = victimCoins.slice(0, amount);
@@ -917,8 +928,8 @@
                 if (coinEl) {
                     coinEl.classList.add('moving');
                     setTimeout(() => {
-                        coinEl.style.left = `${coin.x - 22}px`;
-                        coinEl.style.top = `${coin.y - 22}px`;
+                        coinEl.style.left = `${coin.x - radius}px`;
+                        coinEl.style.top = `${coin.y - radius}px`;
                         coinEl.style.transform = `rotate(${coin.rotation}deg) scale(1.15)`;
                     }, idx * 120);
 
@@ -1023,7 +1034,7 @@
             if (isP1) {
                 p1Indicator.classList.remove('hidden');
                 p2Indicator.classList.add('hidden');
-                display.className = "text-2xl font-extrabold text-blue-400 mt-1 flex items-center justify-center gap-2";
+                display.className = "text-xl sm:text-2xl font-extrabold text-blue-400 mt-0.5 flex items-center justify-center gap-2";
                 display.innerHTML = `<i class="fa-solid fa-user"></i> ${STATE.p1Name}`;
 
                 if (p1HalfBg && p2HalfBg) {
@@ -1033,7 +1044,7 @@
             } else {
                 p1Indicator.classList.add('hidden');
                 p2Indicator.classList.remove('hidden');
-                display.className = "text-2xl font-extrabold text-emerald-400 mt-1 flex items-center justify-center gap-2";
+                display.className = "text-xl sm:text-2xl font-extrabold text-emerald-400 mt-0.5 flex items-center justify-center gap-2";
                 display.innerHTML = `<i class="fa-solid ${STATE.vsCPU ? 'fa-robot' : 'fa-user'}"></i> ${curP2Name}`;
 
                 if (p1HalfBg && p2HalfBg) {
@@ -1051,8 +1062,8 @@
             STATE.history.unshift({ player, text });
 
             const item = document.createElement('div');
-            item.className = "bg-stone-900/90 p-2 rounded-lg border border-stone-800 flex justify-between items-center text-xs";
-            item.innerHTML = `<span class="font-bold ${player === STATE.p1Name ? 'text-blue-400' : 'text-emerald-400'}">${player}</span> <span class="text-stone-300 text-[11px]">${text}</span>`;
+            item.className = "bg-stone-900/90 p-2 rounded-lg border border-stone-800 flex justify-between items-center text-[11px] sm:text-xs";
+            item.innerHTML = `<span class="font-bold ${player === STATE.p1Name ? 'text-blue-400' : 'text-emerald-400'}">${player}</span> <span class="text-stone-300 text-[10px] sm:text-[11px]">${text}</span>`;
             
             container.prepend(item);
         }
@@ -1086,18 +1097,18 @@
             const tableBody = document.getElementById('summary-table-body');
             tableBody.innerHTML = `
                 <tr>
-                    <td class="py-1.5 px-1 font-bold text-blue-400 text-left truncate max-w-[80px]">${STATE.p1Name}</td>
-                    <td class="py-1.5 px-1 text-center">${STATE.initialP1Coins}</td>
-                    <td class="py-1.5 px-1 text-center font-bold text-amber-300">${STATE.p1Coins}</td>
-                    <td class="py-1.5 px-1 text-center text-emerald-400">+${STATE.p1WonTotal}</td>
-                    <td class="py-1.5 px-1 text-center text-rose-400">-${STATE.p1LostTotal}</td>
+                    <td class="py-1 px-0.5 font-bold text-blue-400 text-left truncate max-w-[70px]">${STATE.p1Name}</td>
+                    <td class="py-1 px-0.5 text-center">${STATE.initialP1Coins}</td>
+                    <td class="py-1 px-0.5 text-center font-bold text-amber-300">${STATE.p1Coins}</td>
+                    <td class="py-1 px-0.5 text-center text-emerald-400">+${STATE.p1WonTotal}</td>
+                    <td class="py-1 px-0.5 text-center text-rose-400">-${STATE.p1LostTotal}</td>
                 </tr>
                 <tr>
-                    <td class="py-1.5 px-1 font-bold text-emerald-400 text-left truncate max-w-[80px]">${curP2Name}</td>
-                    <td class="py-1.5 px-1 text-center">${STATE.initialP2Coins}</td>
-                    <td class="py-1.5 px-1 text-center font-bold text-amber-300">${STATE.p2Coins}</td>
-                    <td class="py-1.5 px-1 text-center text-emerald-400">+${STATE.p2WonTotal}</td>
-                    <td class="py-1.5 px-1 text-center text-rose-400">-${STATE.p2LostTotal}</td>
+                    <td class="py-1 px-0.5 font-bold text-emerald-400 text-left truncate max-w-[70px]">${curP2Name}</td>
+                    <td class="py-1 px-0.5 text-center">${STATE.initialP2Coins}</td>
+                    <td class="py-1 px-0.5 text-center font-bold text-amber-300">${STATE.p2Coins}</td>
+                    <td class="py-1 px-0.5 text-center text-emerald-400">+${STATE.p2WonTotal}</td>
+                    <td class="py-1 px-0.5 text-center text-rose-400">-${STATE.p2LostTotal}</td>
                 </tr>
             `;
 
@@ -1133,7 +1144,17 @@
 
         window.onload = function() {
             resetGame();
-            window.addEventListener('resize', initializeCoinList);
+            
+            // Observer for seamless resize & orientation adjustments
+            const board = document.getElementById('paper-board');
+            if (window.ResizeObserver && board) {
+                const resizeObserver = new ResizeObserver(() => {
+                    initializeCoinList();
+                });
+                resizeObserver.observe(board);
+            } else {
+                window.addEventListener('resize', initializeCoinList);
+            }
         };
     </script>
 </body>
